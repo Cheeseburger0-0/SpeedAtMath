@@ -1,0 +1,131 @@
+[gd_scene load_steps=10 format=3 uid="uid://by0f6t0siedhd"]
+
+[ext_resource type="Script" path="res://Scripts/world.gd" id="1_01pqm"]
+[ext_resource type="Texture2D" uid="uid://bv3f0obogis5r" path="res://Assets/Calculator.png" id="1_ec68y"]
+[ext_resource type="Script" path="res://Scripts/control.gd" id="2_t80ih"]
+[ext_resource type="Shader" path="res://Assets/world.gdshader" id="3_4nqpu"]
+[ext_resource type="Script" path="res://Scripts/camera_2d.gd" id="5_d3veo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f71h5"]
+shader = ExtResource("3_4nqpu")
+shader_parameter/board_color = Vector3(0.1, 0.3, 0.1)
+shader_parameter/noise_strength = 0.1
+
+[sub_resource type="Animation" id="Animation_8f8jd"]
+resource_name = "Bounce"
+length = 0.4095
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(0, 1, 0, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ipwsh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nml5g"]
+_data = {
+"Bounce": SubResource("Animation_8f8jd"),
+"RESET": SubResource("Animation_ipwsh")
+}
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_01pqm")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1155.0
+offset_bottom = 650.0
+script = ExtResource("2_t80ih")
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+material = SubResource("ShaderMaterial_f71h5")
+offset_left = -42.0
+offset_top = -28.0
+offset_right = 1182.0
+offset_bottom = 689.0
+
+[node name="SubViewport" type="SubViewport" parent="Control"]
+
+[node name="TextureRect" type="TextureRect" parent="Control/SubViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Line2D" type="Line2D" parent="Control"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(576, 362)
+scale = Vector2(6.3, 6.3)
+texture = ExtResource("1_ec68y")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite2D"]
+libraries = {
+"": SubResource("AnimationLibrary_nml5g")
+}
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(572, 350)
+zoom = Vector2(1.38, 1.38)
+script = ExtResource("5_d3veo")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 504.0
+offset_top = 279.0
+offset_right = 607.0
+offset_bottom = 323.0
+theme_override_font_sizes/font_size = 26
+text = "5 + 5 = "
+
+[node name="Streak" type="Label" parent="."]
+offset_left = 165.0
+offset_top = 127.0
+offset_right = 268.0
+offset_bottom = 171.0
+theme_override_font_sizes/font_size = 31
+text = " 0"
+
+[node name="High" type="Label" parent="."]
+offset_left = 462.0
+offset_top = 113.0
+offset_right = 638.0
+offset_bottom = 157.0
+theme_override_font_sizes/font_size = 31
+text = "High Score: "
+
+[node name="LineEdit" type="LineEdit" parent="."]
+offset_left = 591.0
+offset_top = 283.0
+offset_right = 658.063
+offset_bottom = 314.0
+placeholder_text = "Enter"
+flat = true
+
+[node name="Time" type="Label" parent="."]
+offset_left = 155.0
+offset_top = 548.0
+offset_right = 281.0
+offset_bottom = 583.0
+theme_override_font_sizes/font_size = 25
+text = "Time Left: "
+
+[connection signal="text_changed" from="LineEdit" to="." method="_on_line_edit_text_changed"]
